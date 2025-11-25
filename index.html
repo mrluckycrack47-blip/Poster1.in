@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Poster.in — Shop Posters</title>
+  <style>
+    :root{
+      --bg:#0f0f0f; --card:#111216; --muted:#bdbdbd; --accent:#ff6f00; --accent-2:#25D366;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background:linear-gradient(180deg,#0b0b0b 0%, #0f0f0f 100%);
+      color:#eee;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:12px 20px;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      position:sticky; top:0; z-index:120;
+    }
+    header img.logo{height:44px; border-radius:8px; border:1px solid rgba(255,255,255,0.04)}
+    .brand{font-weight:800; font-size:20px; letter-spacing:0.2px; cursor:pointer}
+    .header-note{margin-left:auto; color:var(--muted); font-size:13px}
+
+    .container{max-width:1200px; margin:18px auto; padding:0 16px;}
+
+    .hero{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      background:linear-gradient(90deg, rgba(255,111,0,0.04), rgba(0,153,51,0.02));
+      padding:18px; border-radius:12px; margin-bottom:18px;
+    }
+    .hero h1{margin:0; font-size:20px}
+    .hero p{margin:6px 0 0; color:var(--muted)}
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap:18px;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:12px;
+      padding:12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      transition:transform .18s ease, box-shadow .18s ease;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,0.02);
+      display:flex; flex-direction:column;
+    }
+    .card:hover{ transform:translateY(-8px); box-shadow:0 18px 40px rgba(0,0,0,0.8); }
+    .card img{ width:100%; height:280px; object-fit:cover; border-radius:10px; display:block; }
+    .card h3{ margin:12px 0 6px; font-size:16px}
+    .card .meta{ color:var(--muted); font-size:14px }
+
+    #productView{ display:none; padding:20px 0; }
+    .product-wrap{ display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; }
+    .gallery{ flex:0 0 520px; max-width:100%; }
+    .gallery img{ width:100%; border-radius:12px; display:block; margin-bottom:12px; }
+    .details{ flex:1; min-width:280px; }
+    .price{ font-size:22px; color:var(--accent); font-weight:700; margin-top:8px; }
+    .old{ text-decoration:line-through; color: #777; margin-left:10px; font-size:14px; font-weight:600}
+    .qty{ display:flex; align-items:center; gap:8px; margin-top:12px }
+    .qty button{ background:transparent; color:#fff; border-radius:6px; border:1px solid rgba(255,255,255,0.06); padding:8px 12px; cursor:pointer }
+
+    .order-btn{ background:var(--accent-2); color:#000; border:none; padding:12px 18px; border-radius:10px; cursor:pointer; font-weight:700; margin-top:14px; display:inline-block; text-decoration:none }
+
+    .delivery-box { background:#0f1112; padding:14px; border-radius:10px; margin-top:18px; border:1px solid rgba(255,255,255,0.03); }
+    .delivery-box h3{ margin:0 0 8px; color:#ffd699 }
+    .delivery-box input{ width:58%; padding:10px; border-radius:8px; border:none; margin-right:8px; background:#151515; color:#fff }
+    .delivery-box .check-btn{ padding:10px 12px; border-radius:8px; border:none; cursor:pointer; background:var(--accent); color:#000; font-weight:700 }
+    #deliveryResult{ margin-top:10px; font-size:15px }
+
+    .similar h3{ margin-top:18px }
+
+    footer{ text-align:center; padding:22px 8px; color:var(--muted); margin-top:40px; border-top:1px solid rgba(255,255,255,0.03) }
+
+    #loadingOverlay{ position:fixed; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.55)); display:flex; align-items:center; justify-content:center; z-index:9999; }
+    .spinner{ width:72px; height:72px; border-radius:50%; border:6px solid rgba(255,255,255,0.06); border-top-color:var(--accent); animation:spin 1s linear infinite }
+    @keyframes spin{ to{ transform:rotate(360deg) }}
+
+    @media (max-width:900px){
+      .gallery{ flex-basis:100% }
+      .product-wrap{ flex-direction:column }
+      .card img{ height:200px }
+      .delivery-box input{ width:100%; margin-bottom:8px }
+      .delivery-box .check-btn{ width:100% }
+    }
+  </style>
+</head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<body>
+  <div class="bg-text">Poster.in</div>
+
+  <div id="loadingOverlay">
+    <div style="text-align:center;color:#fff">
+      <div class="spinner"></div>
+      <div style="margin-top:12px; color:var(--muted)">Loading Poster.in …</div>
+    </div>
+  </div>
+
+  <header>
+    <img class="logo" src="public/logo.png" alt="Poster.in Logo" />
+    <div class="brand" onclick="goHome()">Poster.in</div>
+    <div class="header-note">Demo • Orders via WhatsApp</div>
+  </header>
+
+  <div class="container" id="mainPage">
+    <div class="hero">
+      <div>
+        <h1>Premium Posters — Black Aesthetic</h1>
+        <p class="muted">Tap any poster to view details. Orders are placed via WhatsApp.</p>
+      </div>
+      <div class="muted" style="font-size:13px">Live demo — no payments</div>
+    </div>
+
+    <h2 style="margin-bottom:12px">Shop by Categories</h2>
+    <div class="grid" id="catalogGrid"></div>
+  </div>
+
+  <div id="productView" class="container"></div>
+
+  <footer>
+    © 2025 Poster.in — Orders via WhatsApp • Demo mode
+  </footer>
+
+<script>
+const catalog = [
+  { id:'motivational', title:'Motivational Poster', img1:'public/Poster 1.png', img2:'public/Poster 2.png', price:199, oldPrice:299, desc:'This motivational poster boosts confidence and inspires productivity. Perfect for room, office or study table.' },
+  { id:'anime', title:'Anime Poster', img1:'public/Anime 1.png', img2:'public/Anime 2.png', price:249, oldPrice:349, desc:'High-quality anime art print for fans. Premium colors & durable glossy finish.' },
+  { id:'gaming', title:'Gaming Poster', img1:'public/Gaming 1.png', img2:'public/Gaming 2.png', price:299, oldPrice:399, desc:'Modern gaming poster for setup decoration. Perfect for gamers & streamers.' }
+];
+
+const grid = document.getElementById('catalogGrid');
+function renderCatalog(){
+  grid.innerHTML = '';
+  catalog.forEach(item=>{
+    const card = document.createElement('div');
+    card.className='card';
+    card.innerHTML=`<img src="${item.img1}" alt="${item.title}" /><h3>${item.title}</h3><div class="meta">From ₹${item.price}</div>`;
+    card.onclick=()=>openProduct(item.id);
+    grid.appendChild(card);
+  });
+}
+
+window.addEventListener('load', ()=>setTimeout(()=>document.getElementById('loadingOverlay').style.display='none',600));
+
+renderCatalog();
+
+const mainPage = document.getElementById('mainPage');
+const productView = document.getElementById('productView');
+let currentQty=1;
+
+function openProduct(id){
+  const p = catalog.find(x=>x.id===id);
+  if(!p) return;
+  mainPage.style.display='none';
+  productView.style.display='block';
+
+  productView.innerHTML=`
+    <button onclick="goHome()" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;">⬅ Back</button>
+    <div style="height:12px"></div>
+    <div class="product-wrap">
+      <div class="gallery" style="overflow-x:auto;white-space:nowrap;scroll-behavior:smooth;">
+        <img src="${p.img1}" style="width:100%; max-width:520px; border-radius:12px; display:inline-block; margin-right:12px;">
+        <img src="${p.img2}" style="width:100%; max-width:520px; border-radius:12px; display:inline-block;">
+      </div>
+      <div class="details">
+        <h1 id="ptitle">${p.title}</h1>
+        <div class="muted">Delivery across India (demo)</div>
+        <div class="price">₹${p.price} <span class="old">₹${p.oldPrice}</span></div>
+        <p style="margin-top:12px;color:var(--muted)">${p.desc}</p>
+
+        <div style="margin-top:14px; display:flex; gap:12px; align-items:center;">
+          <a id="waOrderBtn" class="order-btn" target="_blank" rel="noopener noreferrer">📩 Order via WhatsApp</a>
+          <button class="order-btn" id="shareBtn" aria-label="Share this poster">🔗 Share</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <label style="display:block;margin-bottom:6px;">Select Size</label>
+          <select id="sizeSelect" style="padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:#eee">
+            <option value="A4">A4 (₹${p.price})</option>
+            <option value="A3">A3 (₹${Math.round(p.price*1.6)})</option>
+          </select>
+        </div>
+
+        <div class="qty">
+          <div style="font-weight:600">Quantity</div>
+          <button onclick="changeQty(-1)">-</button>
+          <div id="qtyVal" style="min-width:28px; text-align:center">1</div>
+          <button onclick="changeQty(1)">+</button>
+        </div>
+
+        <div class="delivery-box">
+          <h3>📦 Check Delivery Availability</h3>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input id="pincodeInput" type="text" inputmode="numeric" maxlength="6" placeholder="Enter your 6-digit pincode" />
+            <button class="check-btn" onclick="checkPincode()">Check</button>
+          </div>
+          <p id="deliveryResult"></p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="similar">
+      <h3>Similar Posters</h3>
+      <div class="grid">
+        ${catalog.map(it=>`<div class="card" onclick="openProduct('${it.id}')"><img src="${it.img1}" /><h3>${it.title}</h3></div>`).join('')}
+      </div>
+    </div>
+  `;
+
+  currentQty=1;
+  document.getElementById('qtyVal').innerText=currentQty;
+
+  updateWhatsappLink(p);
+
+  // Share button functionality
+  const shareBtn = document.getElementById('shareBtn');
+  if(shareBtn){
+    shareBtn.addEventListener('click', async ()=>{
+      const productTitle=document.getElementById('ptitle')?.innerText||'Poster.in';
+      const url=window.location.href;
+      const text=`Check out this poster: ${productTitle} on Poster.in`;
+
+      if(navigator.share){
+        try{ await navigator.share({title:productTitle,text:text,url:url}); }
+        catch(err){ console.error('Error sharing:',err); }
+      } else { prompt('Copy this link to share:',url); }
+    });
+  }
+}
+
+function changeQty(delta){
+  currentQty=Math.max(1,currentQty+delta);
+  const el=document.getElementById('qtyVal');
+  if(el) el.innerText=currentQty;
+  const titleEl=document.getElementById('ptitle');
+  if(titleEl) updateWhatsappLink(catalog.find(x=>x.title===titleEl.innerText));
+}
+
+function updateWhatsappLink(product){
+  if(!product) return;
+  const sizeEl=document.getElementById('sizeSelect');
+  const size=sizeEl?sizeEl.value:'A4';
+  const qty=currentQty||1;
+  const price=size==='A3'?Math.round(product.price*1.6):product.price;
+  const total=price*qty;
+  const msgPlain=`New order from Poster.in
+Product: ${product.title}
+Size: ${size}
+Quantity: ${qty}
+Price each: ₹${price}
+Total: ₹${total}
+
+Customer will provide name, phone and address on chat.
+Order time: ${new Date().toLocaleString()}`;
+  const WA_PHONE='917411148048';
+  const waHref=`https://wa.me/${WA_PHONE}?text=${encodeURIComponent(msgPlain)}`;
+  const waBtn=document.getElementById('waOrderBtn');
+  if(waBtn) waBtn.href=waHref;
+}
+
+function goHome(){
+  productView.style.display='none';
+  mainPage.style.display='block';
+  window.scrollTo(0,0);
+}
+
+function checkPincode(){
+  const input=document.getElementById('pincodeInput');
+  const result=document.getElementById('deliveryResult');
+  if(!input) return;
+  const pin=input.value.trim();
+  if(!/^[0-9]{6}$/.test(pin)){
+    result.style.color='orange';
+    result.innerText='⚠️ Please enter a valid 6-digit pincode.';
+    return;
+  }
+  const serviceable=['560001','110001','400001','587101','587102','587103','585101'];
+  if(serviceable.includes(pin)){
+    result.style.color='#00e676';
+    result.innerText='✅ Good news — delivery available to your pincode! Estimated 2-5 days.';
+  } else {
+    result.style.color='#ff5252';
+    result.innerText='❌ Sorry — delivery not available to this pincode (demo).';
+  }
+}
+</script>
+</body>
+</html>

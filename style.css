@@ -1,0 +1,209 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background: #ffffff;
+    color: #222;
+}
+
+/* Header */
+.header {
+    width: 100%;
+    padding: 20px;
+    background: #ff4f5a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.logo span {
+    color: #000;
+}
+
+.navbar a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.navbar a:hover {
+    color: #000;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #ff8a5c, #ff4f5a);
+    padding: 80px 20px;
+    text-align: center;
+    color: white;
+}
+
+.hero h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 18px;
+    opacity: 0.9;
+}
+
+.hero-btn {
+    margin-top: 20px;
+    padding: 12px 30px;
+    border: none;
+    background: #fff;
+    color: #ff4f5a;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.hero-btn:hover {
+    background: #000;
+    color: #fff;
+}
+
+/* Features section */
+.features {
+    display: flex;
+    justify-content: space-around;
+    padding: 50px 20px;
+    flex-wrap: wrap;
+}
+
+.feature-box {
+    width: 300px;
+    padding: 25px;
+    margin: 15px;
+    background: #ffe7e7;
+    border-radius: 12px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.feature-box:hover {
+    transform: scale(1.05);
+    background: #ffdcdc;
+}
+
+.feature-box h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.feature-box p {
+    font-size: 15px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    background: #ff4f5a;
+    color: white;
+    margin-top: 40px;
+}
+
+/* Mobile View */
+@media (max-width: 768px) {
+    .navbar {
+        display: none;
+    }
+
+    .header {
+        justify-content: center;
+    }
+}
+/* Poster Sections */
+.poster-sections {
+    padding: 50px 20px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 30px;
+    color: #ff4f5a;
+}
+
+.section-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.poster-box {
+    background: #fff6f6;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.poster-box:hover {
+    transform: scale(1.08);
+    background: #ffe3e3;
+}
+
+.poster-box img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.poster-box p {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 500;
+}
+.delivery-box {
+  background:#1c1c1c;
+  padding:20px;
+  border-radius:12px;
+  margin-top:20px;
+  border:1px solid #333;
+}
+
+.delivery-box h3 {
+  margin-bottom:10px;
+  color:#ffb84d;
+}
+
+.delivery-box input {
+  width:60%;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  margin-right:10px;
+  background:#333;
+  color:#fff;
+}
+
+.btn.small {
+  padding:10px 15px;
+  font-size:16px;
+}
+
+#deliveryResult {
+  margin-top:10px;
+  font-size:16px;
+}
+/* Background Watermark Text */

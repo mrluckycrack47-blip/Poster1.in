@@ -1,0 +1,49 @@
+<!-- admin.html (copy everything) -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Poster.in — Admin Orders</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;background:#0b0b0b;color:#eee;padding:18px}
+    .card{background:#121212;padding:12px;border-radius:8px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 12px}
+    .muted{color:#999;font-size:13px}
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <h1>Poster.in — Orders (Admin)</h1>
+  <div id="orders"></div>
+  <script>
+    const FIREBASE_CONFIG = {
+      apiKey: "REPLACE_ME",
+      authDomain: "REPLACE_ME",
+      projectId: "REPLACE_ME",
+    };
+    const app = firebase.initializeApp(FIREBASE_CONFIG);
+    const db = firebase.firestore();
+
+    async function loadOrders(){
+      const container = document.getElementById('orders');
+      container.innerHTML = '<div class="muted">Loading orders...</div>';
+      try{
+        const snap = await db.collection('orders').orderBy('createdAt','desc').get();
+        container.innerHTML = '';
+        snap.forEach(doc=>{
+          const o = doc.data();
+          const div = document.createElement('div'); div.className='card';
+          div.innerHTML = `<div style="display:flex;justify-content:space-between"><strong>Order</strong><span class="muted">${o.createdAt}</span></div>
+            <div class="muted">Name: ${o.name} • Phone: ${o.phone} • Pin: ${o.pin}</div>
+            <div style="margin-top:8px">Items:<ul>${o.items.map(it=>`<li>${it.title} (${it.size}) x${it.qty} — ₹${it.price}</li>`).join('')}</ul></div>
+            <div style="margin-top:8px"><strong>Total: ₹${o.total}</strong> • Method: ${o.method}</div>`;
+          container.appendChild(div);
+        });
+        if(container.innerHTML==='') container.innerHTML = '<div class="muted">No orders yet</div>';
+      }catch(e){console.error(e); container.innerHTML = '<div class="muted">Failed to load orders — check Firebase config & console.</div>'}
+    }
+    loadOrders();
+  </script>
+</body>
+</html>
